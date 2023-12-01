@@ -59,6 +59,15 @@ function MapMain() {
           />
 
         </LayersControl.Overlay>
+        <LayersControl.Overlay name="Yandex map">
+          <TileLayer
+            id={'tileId-3'}
+            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="http://vec{s}.maps.yandex.net/tiles?l=map&v=4.55.2&z={z}&x={x}&y={y}&scale=2&lang=ru_RU'"
+          // subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+          />
+
+        </LayersControl.Overlay>
 
 
       </LayersControl>
