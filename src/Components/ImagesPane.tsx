@@ -1,15 +1,16 @@
-import { useEffect, useState, useRef, PropsWithChildren, FC, useCallback } from 'react';
+import { useEffect, useState, useRef, useLayoutEffect, useCallback } from 'react';
 // import { useLocation } from 'react-router-dom';
 
-import { ImageOverlay, LayersControl, MapContainer, Pane, TileLayer, Marker, useMap } from 'react-leaflet'
-import { useMapEvents } from 'react-leaflet';
+import { Pane, ImageOverlay, useMap, useMapEvents } from 'react-leaflet'
+
+import L, { } from 'leaflet';
 import 'leaflet-rotatedmarker';
-import L, { Popup } from 'leaflet';
-import style from './style.module.css'
-// import "./style.css";
-import houseData from './houseData';
-import { Box } from '@mui/material';
+
+
+import CustomImageOverlay from './CustomImageOverlay';
 import CardModal from './CardModal';
+
+import houseData from './houseData';
 
 const imgSizeStart = { width: 200, heigth: 118 }
 const proportion = imgSizeStart.width / imgSizeStart.heigth
@@ -23,12 +24,17 @@ type TImgSize = {
   width: number,
   heigth: number
 }
+
+
 const ImagesPane = () => {
 
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => setOpen(false);
 
   const [iconSize, setIconSize] = useState<TImgSize>(() => ({ width: imgSizeStart.width, heigth: Math.floor(imgSizeStart.width / proportion) }))
   const map = useMap()
-
+  const imageOverlayRef = useRef<L.ImageOverlay | null>(null)
 
 
   const getImageWidth = (zoom: number) => {
@@ -40,9 +46,7 @@ const ImagesPane = () => {
     return { width: Math.floor(widthResult), heigth: heigthResult }
   }
 
-  // const markerHandler = () => {
-  //   handleOpen()
-  // }
+
   const ZoomListener = () => {
     useMapEvents({
       zoomend: () => {
@@ -58,56 +62,64 @@ const ImagesPane = () => {
     return null;
   };
 
+  const imageRotate = () => {
+    if (imageOverlayRef.current) {
+      const imageElement = imageOverlayRef.current.getElement();
+      if (imageElement) {
+        // Теперь у вас есть HTML-элемент изображения, и вы можете выполнять с ним нужные действия
+        // Например, поворот
+        const originalTransformValue = imageElement.style.transform;
+        // imageElement.style.transform = 'rotate(90deg)';
+        imageElement.style.transform = `${originalTransformValue} rotateZ(${45}deg)`;
+      }
+    }
+  };
 
 
-  type TMarrkerIconProps = {
-    imgSize: {
-      width: number;
-      heigth: number;
-    };
-    children?: never[];
-  }
+  useEffect(() => {
+    imageRotate()
+  })
+  useLayoutEffect(() => {
+    imageRotate()
+  })
 
-  const ImageMarker: FC<TMarrkerIconProps> = ({ imgSize }) => {
-    console.log("Rennder ImageMarker");
+  // const handleOpen = useCallback(() => setOpen(true), []);
+  const handleOpen = () => {
+    console.log("CLICk");
 
-    const [open, setOpen] = useState(false);
-    const handleOpen = useCallback(() => setOpen(true), []);
-    const handleClose = () => setOpen(false);
-
-    const customIcon = L.icon({
-      iconUrl: './image/var_1.jpg',
-      iconSize: [imgSize.width, imgSize.heigth], // размеры изображения
-      className: style.image_var,
-      iconAnchor: [55.725626, 37.569778]
-    });
-
-    return (
-      <Marker position={[55.725626, 37.569778]} icon={customIcon}
-        eventHandlers={{
-          click: () => handleOpen()
-        }}
-      >
-        <CardModal open={open} handleClose={handleClose} data={houseData[0]}></CardModal>
-      </Marker>
-    )
-  }
+    setOpen(true)
+  };
 
 
   return (
-    <Pane name='image-pane' style={{ zIndex: 500, width: '100vh' }}>
-      <ZoomListener />
-      {/* <ImageOverlay
-      bounds={[[55.725626, 37.569778], [55.725517, 37.571963]]}
-      url={'./image/var_1.jpg'}
-      pane='image-pane'
-      className='image_var'
-    // scale={1}
-    // onClick={handleClick}
-    ></ImageOverlay> */}
-      <ImageMarker imgSize={iconSize} key='marker'>
-      </ImageMarker>
+    <Pane name='image-pane' style={{ zIndex: 1500, width: '100vh' }}>
+      {/* <ZoomListener /> */}
+      <ImageOverlay
+        // ref={imageOverlayRef
+        interactive
+        zIndex={2000}
+        bounds={[[55.725626, 37.569778], [55.7265, 37.5729]]}
+        url={'./image/var_1.jpg'}
+        pane='image-pane'
+        className='image_var'
+        eventHandlers={{
+          click: () => {
+            console.log("ImageOverlay clicked!");
+            handleOpen();
+          },
+          mouseup: () => {
+            console.log("MOUSE UP");
 
+          }
+        }}
+      >
+        <CardModal open={open} handleClose={handleClose} data={houseData[0]}></CardModal>
+
+
+      </ImageOverlay>
+      <CustomImageOverlay />
+      {/* <ImageMarker imgSize={iconSize} key='marker'>
+      </ImageMarker> */}
 
     </Pane>
   )

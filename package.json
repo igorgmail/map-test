@@ -26,6 +26,7 @@
     "axios": "^1.5.1",
     "env-cmd": "^10.1.0",
     "leaflet": "^1.9.4",
+    "leaflet-distortableimage": "^0.21.9",
     "leaflet-rotatedmarker": "^0.2.0",
     "leaflet-routing-machine": "^3.2.12",
     "luxon": "^3.4.3",

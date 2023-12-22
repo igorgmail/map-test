@@ -9,27 +9,57 @@ import "./style.css";
 
 import { Box } from '@mui/material';
 import ImagesPane from './ImagesPane';
-
+// import { addImage, addListenerToMap } from './Custom';
 
 const mapCenter: L.LatLngTuple = [55.726390, 37.575343]
 const poVar_1: L.LatLngTuple = [55.725570, 37.570211]
 const poVar_2: L.LatLngTuple = [55.719871, 37.576459]
-
+interface CustomWindow extends Window {
+  map?: L.Map | null;
+}
 
 function MapMain() {
 
 
   const mapRef = useRef<L.Map | null>(null)
 
+  // const handleMap = async () => {
+  //   setTimeout(() => {
+  //     console.log("▶ ⇛ mapRef.current:", mapRef.current);
+  //     (window as CustomWindow).map = mapRef.current;
+  //     addImage()
+  //     addListenerToMap()
+  //   })
+
+
+  //   // (window as CustomWindow).map = mapRef.current
+  // }
+
+
+  useEffect(() => {
+    // Получаем доступ к объекту карты и передаем его в глобальный объект window
+    // console.log("▶ ⇛ mapRef.current:", mapRef.current);
+    if (mapRef.current) {
+      (window as CustomWindow).map = mapRef.current;
+    }
+  }, [mapRef.current]);
+
 
   return (
     <MapContainer
       center={poVar_1}
+      ref={mapRef}
+
+      whenReady={() => {
+        // Присваиваем созданный объект карты к mapRef
+        // handleMap()
+
+      }}
+
 
       zoom={17}
       zoomDelta={0.5}
       zoomSnap={0.5}
-      ref={mapRef}
       // scrollWheelZoom={true}
       style={{ width: '100%', height: '100%' }}>
 
@@ -68,9 +98,8 @@ function MapMain() {
           />
 
         </LayersControl.Overlay>
-
-
       </LayersControl>
+
       <ImagesPane></ImagesPane>
 
       {/* <ImageOverlay
@@ -78,9 +107,9 @@ function MapMain() {
           url={'./image/var_1.jpg'}
           pane='image-pane'
           className='image_var'
-        // scale={1}
+        // style={{with: '100px'}}
         // onClick={handleClick}
-        ></ImageOverlay> */}
+      ></ImageOverlay> */}
 
     </MapContainer >
   )

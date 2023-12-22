@@ -57,7 +57,8 @@ export default function RecipeReviewCard({ variant }: any) {
       />
       <CardMedia
         component="img"
-        height="194"
+        height="100"
+        width={"80%"}
         image={variant.img}
         alt="Paella dish"
       />
